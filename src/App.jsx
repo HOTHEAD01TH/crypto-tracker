@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import PriceCard from './components/PriceCard';
 import InsightCard from './components/InsightCard';
@@ -11,32 +11,53 @@ const coins = [
   { symbol: 'DOGE', name: 'Dogecoin', logo: 'https://cryptologos.cc/logos/dogecoin-doge-logo.png' },
   { symbol: 'XRP', name: 'Ripple', logo: 'https://cryptologos.cc/logos/xrp-xrp-logo.png' },
   { symbol: 'SOL', name: 'Solana', logo: 'https://cryptologos.cc/logos/solana-sol-logo.png' },
-  { symbol: 'ADA', name: 'Cardano', logo: 'https://cryptologos.cc/logos/cardano-ada-logo.png' }
+  { symbol: 'ADA', name: 'Cardano', logo: 'https://cryptologos.cc/logos/cardano-ada-logo.png' },
+  { symbol: 'DOT', name: 'Polkadot', logo: 'https://cryptologos.cc/logos/polkadot-new-dot-logo.png' },
+  { symbol: 'MATIC', name: 'Polygon', logo: 'https://cryptologos.cc/logos/polygon-matic-logo.png' },
+  { symbol: 'LINK', name: 'Chainlink', logo: 'https://cryptologos.cc/logos/chainlink-link-logo.png' }
 ];
 
 function Home() {
   return (
     <div className="bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-white">
-      <header className="p-4 text-center flex justify-between items-center max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold">Crypto Tracker</h1>
-        <Link to="/calculator" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          Calculator
-        </Link>
+      <header className="p-4 bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Crypto Tracker</h1>
+          <Link 
+            to="/calculator" 
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Portfolio Calculator
+          </Link>
+        </div>
       </header>
       
-      <main className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
-        {coins.map(({ symbol, name, logo }) => (
-          <div key={symbol} className="space-y-4">
-            <div className="flex items-center gap-2 p-2">
-              <img src={logo} alt={name} className="w-8 h-8" />
-              <h2 className="font-semibold">{name}</h2>
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+          {coins.map(({ symbol, name, logo }) => (
+            <div key={symbol} className="space-y-4">
+              {/* Coin Card */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                <div className="flex items-center gap-3 p-4 border-b dark:border-gray-700">
+                  <img src={logo} alt={name} className="w-10 h-10" />
+                  <h2 className="text-xl font-bold">{name}</h2>
+                </div>
+                
+                <div className="p-4">
+                  <PriceCard symbol={symbol} />
+                </div>
+                
+                <div className="p-4 bg-gray-50 dark:bg-gray-700">
+                  <HistoricalChart symbol={symbol} days={30} />
+                </div>
+              </div>
+
+              {/* Insight Card */}
+              <InsightCard symbol={symbol} name={name} />
             </div>
-            <PriceCard symbol={symbol} />
-            <InsightCard symbol={symbol} />
-            <HistoricalChart symbol={symbol} days={30} />
-          </div>
-        ))}
-      </main>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
