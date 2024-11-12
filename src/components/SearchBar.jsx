@@ -24,13 +24,13 @@ function SearchBar({ onAddCoin }) {
 
   return (
     <div className="flex flex-col items-start gap-2">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-full">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for a coin..."
-          className="p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+          className="flex-grow p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
         />
         <button
           onClick={handleSearch}

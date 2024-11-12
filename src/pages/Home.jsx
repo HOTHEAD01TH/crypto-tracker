@@ -35,7 +35,6 @@ function Home() {
           <h1 className="text-3xl font-bold">Crypto Tracker</h1>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <SearchBar onAddCoin={addCoin} />
             <Link 
               to="/calculator" 
               className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
@@ -53,6 +52,10 @@ function Home() {
       </header>
       
       <div className="max-w-7xl mx-auto p-6">
+        <div className="mb-6">
+          <SearchBar onAddCoin={addCoin} />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
           {coins.map(({ symbol, name, logo }) => (
             <div key={symbol} className="space-y-4">
