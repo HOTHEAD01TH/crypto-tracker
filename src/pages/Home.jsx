@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PriceCard from '../components/PriceCard';
 import InsightCard from '../components/InsightCard';
 import HistoricalChart from '../components/HistoricalChart';
+import ThemeToggle from '../components/ThemeToggle';
 
 const coins = [
   { symbol: 'BTC', name: 'Bitcoin', logo: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png' },
@@ -23,6 +24,7 @@ function Home() {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-3xl font-bold">Crypto Tracker</h1>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Link 
               to="/calculator" 
               className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
