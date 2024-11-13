@@ -1,7 +1,4 @@
-#!/bin/bash
-
-# Define the content of the README.md file
-readme_content="# Crypto Tracker
+# Crypto Tracker
 
 A modern cryptocurrency tracking application built with React that provides real-time price updates, portfolio management, and market insights.
 
