@@ -34,8 +34,33 @@ export async function getLivePrice(symbol) {
 
 export async function getHistoricalData(symbol, days) {
   try {
+    let endpoint;
+    let limit;
+    
+    if (days <= 1/24) {
+      // Hourly data
+      endpoint = 'histominute';
+      limit = 60;
+    } else if (days <= 1) {
+      // Daily data by hour
+      endpoint = 'histohour';
+      limit = 24;
+    } else if (days <= 7) {
+      // Weekly data by hour
+      endpoint = 'histohour';
+      limit = days * 24;
+    } else if (days <= 30) {
+      // Monthly data by day
+      endpoint = 'histoday';
+      limit = 30;
+    } else {
+      // Yearly data by day
+      endpoint = 'histoday';
+      limit = 365;
+    }
+
     const response = await fetch(
-      `${API_BASE_URL}/v2/histoday?fsym=${symbol}&tsym=USD&limit=${days}&api_key=${API_KEY}`
+      `${API_BASE_URL}/v2/${endpoint}?fsym=${symbol}&tsym=USD&limit=${limit}&api_key=${API_KEY}`
     );
     const data = await response.json();
     return data.Data.Data.map(item => [item.time * 1000, item.close]);
