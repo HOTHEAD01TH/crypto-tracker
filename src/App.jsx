@@ -4,6 +4,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Calculator from './pages/Calculator';
+import NewsAnalytics from './pages/NewsAnalytics';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/dashboard" element={<Home />} />
           <Route path="/calculator" element={<Calculator />} />
+          <Route path="/news" element={<NewsAnalytics />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

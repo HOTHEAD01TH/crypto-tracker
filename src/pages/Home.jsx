@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import PriceCard from '../components/PriceCard';
+import PriceCard from '../components/priceCard';
 import InsightCard from '../components/InsightCard';
 import HistoricalChart from '../components/HistoricalChart';
 import ThemeToggle from '../components/ThemeToggle';
@@ -35,6 +35,12 @@ function Home() {
           <h1 className="text-3xl font-bold">Crypto Tracker</h1>
           <div className="flex items-center gap-4">
             <ThemeToggle />
+            <Link 
+              to="/news" 
+              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              News & Analytics
+            </Link>
             <Link 
               to="/calculator" 
               className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"

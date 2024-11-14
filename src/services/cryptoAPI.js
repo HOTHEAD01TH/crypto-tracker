@@ -69,3 +69,42 @@ export async function getHistoricalData(symbol, days) {
     return [];
   }
 }
+
+export async function getNews() {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/v2/news/?lang=EN&api_key=${API_KEY}`
+    );
+    const data = await response.json();
+    return data.Data;
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    return [];
+  }
+}
+
+export async function getSocialSentiment() {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/social/coin/latest?api_key=${API_KEY}`
+    );
+    const data = await response.json();
+    return data.Data;
+  } catch (error) {
+    console.error("Error fetching sentiment:", error);
+    return {};
+  }
+}
+
+export async function getLatestTransactions() {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/blockchain/latest?api_key=${API_KEY}`
+    );
+    const data = await response.json();
+    return Array.isArray(data.Data) ? data.Data : [];
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    return [];
+  }
+}

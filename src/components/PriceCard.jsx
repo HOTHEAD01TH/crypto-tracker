@@ -18,16 +18,18 @@ function PriceCard({ symbol }) {
   }, [symbol]);
 
   const formatPercent = (value) => {
+    if (value === undefined || value === null) return '0.00%';
     return `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
   };
 
-  if (isLoading) {
-    return <div className="animate-pulse space-y-4">
-      {/* Loading skeleton */}
-      <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-3/4"></div>
-      <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
-      <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/2"></div>
-    </div>;
+  if (isLoading || !marketData) {
+    return (
+      <div className="animate-pulse space-y-4">
+        <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+        <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/2"></div>
+      </div>
+    );
   }
 
   return (
@@ -35,10 +37,10 @@ function PriceCard({ symbol }) {
       {/* Price and 24h Change */}
       <div className="flex justify-between items-center">
         <span className="text-2xl font-bold">
-          ${marketData?.PRICE.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          ${marketData?.PRICE?.toLocaleString(undefined, { minimumFractionDigits: 2 }) || '0.00'}
         </span>
         <span className={`text-sm font-semibold ${
-          marketData?.CHANGEPCT24HOUR > 0 ? 'text-green-500' : 'text-red-500'
+          (marketData?.CHANGEPCT24HOUR || 0) > 0 ? 'text-green-500' : 'text-red-500'
         }`}>
           {formatPercent(marketData?.CHANGEPCT24HOUR)}
         </span>
@@ -48,11 +50,11 @@ function PriceCard({ symbol }) {
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
           <p className="text-gray-500 dark:text-gray-400">24h Volume</p>
-          <p className="font-medium">${marketData?.VOLUME24HOUR.toLocaleString()}</p>
+          <p className="font-medium">${marketData?.VOLUME24HOUR?.toLocaleString() || '0'}</p>
         </div>
         <div>
           <p className="text-gray-500 dark:text-gray-400">Market Cap</p>
-          <p className="font-medium">${marketData?.MKTCAP.toLocaleString()}</p>
+          <p className="font-medium">${marketData?.MKTCAP?.toLocaleString() || '0'}</p>
         </div>
       </div>
 
@@ -60,11 +62,15 @@ function PriceCard({ symbol }) {
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
           <p className="text-gray-500 dark:text-gray-400">24h High</p>
-          <p className="font-medium text-green-500">${marketData?.HIGH24HOUR.toLocaleString()}</p>
+          <p className="font-medium text-green-500">
+            ${marketData?.HIGH24HOUR?.toLocaleString() || '0.00'}
+          </p>
         </div>
         <div>
           <p className="text-gray-500 dark:text-gray-400">24h Low</p>
-          <p className="font-medium text-red-500">${marketData?.LOW24HOUR.toLocaleString()}</p>
+          <p className="font-medium text-red-500">
+            ${marketData?.LOW24HOUR?.toLocaleString() || '0.00'}
+          </p>
         </div>
       </div>
 
