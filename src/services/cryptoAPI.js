@@ -1,6 +1,24 @@
 const API_BASE_URL = 'https://min-api.cryptocompare.com/data';
 const API_KEY = import.meta.env.VITE_CRYPTOCOMPARE_API_KEY;
 
+// const API_BASE_URL = 'https://min-api.cryptocompare.com/data';
+// const API_KEY = import.meta.env.VITE_CRYPTOCOMPARE_API_KEY;
+
+export async function getMarketData(symbol) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/pricemultifull?fsyms=${symbol}&tsyms=USD&api_key=${API_KEY}`
+    );
+    const data = await response.json();
+    return data.RAW[symbol].USD;
+  } catch (error) {
+    console.error("Error fetching market data:", error);
+    return null;
+  }
+}
+
+// Keep existing functions
+
 export async function getLivePrice(symbol) {
   try {
     const response = await fetch(
