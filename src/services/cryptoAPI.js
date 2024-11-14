@@ -108,3 +108,26 @@ export async function getLatestTransactions() {
     return [];
   }
 }
+
+export async function searchCoins(query) {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/search?query=${encodeURIComponent(query)}&api_key=${API_KEY}`
+    );
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch search results');
+    }
+
+    const data = await response.json();
+    
+    if (!data.coins || !Array.isArray(data.coins)) {
+      return [];
+    }
+
+    return data.coins.slice(0, 5); // Limit to 5 results
+  } catch (error) {
+    console.error('Error searching coins:', error);
+    throw error;
+  }
+}

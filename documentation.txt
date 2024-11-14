@@ -1,0 +1,201 @@
+# Crypto Tracker Documentation
+
+## Table of Contents
+1. [Overview](#overview)
+2. [Architecture](#architecture)
+3. [Features](#features)
+4. [Technical Stack](#technical-stack)
+5. [Component Structure](#component-structure)
+6. [State Management](#state-management)
+7. [Theming System](#theming-system)
+8. [API Integration](#api-integration)
+9. [Installation & Setup](#installation--setup)
+10. [Deployment](#deployment)
+
+## Overview
+Crypto Tracker is a modern web application built with React that provides real-time cryptocurrency tracking, portfolio management, and market insights. The application features a responsive design, dark/light theme support, and real-time price updates.
+
+## Architecture
+
+### Project Structure
+```
+crypto-tracker/
+├── src/
+│   ├── components/
+│   │   ├── PriceCard.jsx
+│   │   ├── HistoricalChart.jsx
+│   │   ├── InsightCard.jsx
+│   │   ├── NewsFeed.jsx
+│   │   ├── PortfolioCalculator.jsx
+│   │   ├── SearchBar.jsx
+│   │   └── ThemeToggle.jsx
+│   ├── context/
+│   │   └── ThemeContext.jsx
+│   ├── pages/
+│   │   ├── Landing.jsx
+│   │   ├── Home.jsx
+│   │   ├── Calculator.jsx
+│   │   └── NewsAnalytics.jsx
+│   ├── App.jsx
+│   └── main.jsx
+```
+
+## Features
+
+### 1. Real-time Cryptocurrency Tracking
+- Live price updates
+- Historical price charts
+- Market insights
+- Support for multiple cryptocurrencies
+
+### 2. Portfolio Management
+- Portfolio value calculator
+- Multiple currency support
+- Real-time portfolio valuation
+- Historical performance tracking
+
+### 3. News & Analytics
+- Latest cryptocurrency news
+- Market analysis
+- Trending stories
+- Source attribution
+
+### 4. Theme System
+- Dark/Light mode toggle
+- Persistent theme preference
+- Responsive design
+- Consistent styling across components
+
+## Technical Stack
+
+### Core Technologies
+- React 18.3.1
+- React Router 6.28.0
+- Chart.js 4.4.6
+- Tailwind CSS 3.4.14
+- Vite 5.4.11
+
+### Development Tools
+- ESLint
+- PostCSS
+- Autoprefixer
+- TypeScript support
+
+## Component Structure
+
+### Key Components
+
+1. **PriceCard**
+   - Displays real-time cryptocurrency prices
+   - Shows 24h changes and volume
+   - Includes market cap information
+
+2. **HistoricalChart**
+   - Renders price history using Chart.js
+   - Supports multiple timeframes
+   - Theme-aware styling
+
+3. **PortfolioCalculator**
+   - Calculates portfolio value
+   - Supports multiple currencies
+   - Real-time updates
+
+4. **NewsFeed**
+   - Displays latest crypto news
+   - Responsive image handling
+   - Loading state management
+
+## State Management
+
+### Theme Context
+
+```1:37:src/context/ThemeContext.jsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+const ThemeContext = createContext();
+const ThemeContext = createContext();
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'light';
+    }
+    return 'light';
+  });
+  });
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+  }, [theme]);
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+  };
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+}
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
+```
+
+
+### Local State Management
+- useState for component-level state
+- useEffect for side effects
+- Props for component communication
+
+## Installation & Setup
+
+1. **Prerequisites**
+   - Node.js 16+
+   - npm or yarn
+
+2. **Installation Steps**
+```bash
+git clone https://github.com/yourusername/crypto-tracker.git
+cd crypto-tracker
+npm install
+npm run dev
+```
+
+3. **Environment Variables**
+```env
+VITE_API_KEY=your_api_key
+VITE_API_URL=api_base_url
+```
+
+## Deployment
+
+1. **Build Process**
+```bash
+npm run build
+```
+
+2. **Production Optimization**
+- Minified bundles
+- Code splitting
+- Asset optimization
+- Cache management
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
+
+## License
+MIT License - See LICENSE file for details
+
