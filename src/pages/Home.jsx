@@ -25,9 +25,14 @@ function Home() {
     const newCoin = {
       symbol: coin.symbol.toUpperCase(),
       name: coin.name,
-      logo: coin.thumb
+      logo: coin.thumb || coin.large
     };
-    setCoins([...coins, newCoin]);
+    
+    // Check if coin already exists
+    if (!coins.some(c => c.symbol === newCoin.symbol)) {
+      // Add new coin at the beginning of the array
+      setCoins([newCoin, ...coins]);
+    }
   };
 
   return (
