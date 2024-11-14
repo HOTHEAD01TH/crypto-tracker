@@ -36,11 +36,11 @@ function NewsFeed() {
           className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
         >
           <a href={item.url} target="_blank" rel="noopener noreferrer">
-            <div className="flex">
+            <div className="flex flex-col sm:flex-row">
               <img 
                 src={item.imageurl} 
                 alt={item.title} 
-                className="w-48 h-32 object-cover"
+                className="w-full sm:w-48 h-48 sm:h-32 object-cover"
               />
               <div className="p-4">
                 <h3 className="text-lg font-semibold mb-2">{item.title}</h3>

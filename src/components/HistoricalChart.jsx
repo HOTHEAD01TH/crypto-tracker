@@ -11,6 +11,7 @@ import {
   Legend
 } from 'chart.js';
 import { getHistoricalData } from '../services/cryptoAPI';
+import { useTheme } from '../context/ThemeContext';
 
 // Register ChartJS components
 ChartJS.register(
@@ -35,6 +36,62 @@ function HistoricalChart({ symbol }) {
   const [chartData, setChartData] = useState(null);
   const [selectedTimeframe, setSelectedTimeframe] = useState('24h');
   const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
+
+  const chartThemes = {
+    light: {
+      borderColor: 'rgb(59, 130, 246)',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      gridColor: 'rgba(156, 163, 175, 0.1)',
+      textColor: 'rgb(55, 65, 81)'
+    },
+    dark: {
+      borderColor: 'rgb(96, 165, 250)',
+      backgroundColor: 'rgba(96, 165, 250, 0.1)',
+      gridColor: 'rgba(75, 85, 99, 0.2)',
+      textColor: 'rgb(209, 213, 219)'
+    }
+  };
+
+  const currentTheme = chartThemes[theme === 'dark' ? 'dark' : 'light'];
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: theme === 'dark' ? 'rgb(31, 41, 55)' : 'rgb(255, 255, 255)',
+        titleColor: currentTheme.textColor,
+        bodyColor: currentTheme.textColor,
+        borderColor: currentTheme.gridColor,
+        borderWidth: 1
+      }
+    },
+    scales: {
+      x: {
+        display: false
+      },
+      y: {
+        position: 'right',
+        grid: {
+          color: currentTheme.gridColor,
+        },
+        ticks: {
+          color: currentTheme.textColor,
+          callback: (value) => `$${value.toLocaleString()}`
+        }
+      }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -68,47 +125,6 @@ function HistoricalChart({ symbol }) {
     }
     fetchData();
   }, [symbol, selectedTimeframe]);
-
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          color: 'rgb(156, 163, 175)',
-        }
-      },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: 'rgb(156, 163, 175)',
-          maxRotation: 45,
-          minRotation: 45,
-        },
-      },
-      y: {
-        grid: {
-          color: 'rgba(156, 163, 175, 0.1)',
-        },
-        ticks: {
-          color: 'rgb(156, 163, 175)',
-          callback: (value) => `$${value.toLocaleString()}`,
-        },
-      },
-    },
-    interaction: {
-      intersect: false,
-      mode: 'index',
-    },
-  };
 
   return (
     <div className="space-y-4">

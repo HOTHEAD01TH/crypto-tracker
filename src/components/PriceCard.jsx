@@ -35,8 +35,8 @@ function PriceCard({ symbol }) {
   return (
     <div className="space-y-4">
       {/* Price and 24h Change */}
-      <div className="flex justify-between items-center">
-        <span className="text-2xl font-bold">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <span className="text-xl sm:text-2xl font-bold">
           ${marketData?.PRICE?.toLocaleString(undefined, { minimumFractionDigits: 2 }) || '0.00'}
         </span>
         <span className={`text-sm font-semibold ${
@@ -47,7 +47,7 @@ function PriceCard({ symbol }) {
       </div>
 
       {/* Trading Volume */}
-      <div className="grid grid-cols-2 gap-4 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         <div>
           <p className="text-gray-500 dark:text-gray-400">24h Volume</p>
           <p className="font-medium">${marketData?.VOLUME24HOUR?.toLocaleString() || '0'}</p>

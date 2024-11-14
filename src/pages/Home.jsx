@@ -19,6 +19,8 @@ function Home() {
     { symbol: 'LINK', name: 'Chainlink', logo: 'https://cryptologos.cc/logos/chainlink-link-logo.png' }
   ]);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const addCoin = (coin) => {
     const newCoin = {
       symbol: coin.symbol.toUpperCase(),
@@ -33,28 +35,81 @@ function Home() {
       <header className="p-4 bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-3xl font-bold">Crypto Tracker</h1>
+          
           <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link 
-              to="/news" 
-              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-4">
+              <Link 
+                to="/news" 
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                News & Analytics
+              </Link>
+              <Link 
+                to="/calculator" 
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Portfolio Calculator
+              </Link>
+            </div>
+            
+            {/* Theme Toggle */}
+            <div className="border-l pl-4 dark:border-gray-600">
+              <ThemeToggle />
+            </div>
+
+            {/* Hamburger Menu Button */}
+            <button 
+              className="md:hidden p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              News & Analytics
-            </Link>
-            <Link 
-              to="/calculator" 
-              className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              Portfolio Calculator
-            </Link>
-            <Link 
-              to="/" 
-              className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white"
-            >
-              Exit to Home
-            </Link>
+              <svg 
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {isMenuOpen ? (
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 py-4 border-t dark:border-gray-700">
+            <div className="flex flex-col gap-2">
+              <Link 
+                to="/news" 
+                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                News & Analytics
+              </Link>
+              <Link 
+                to="/calculator" 
+                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Portfolio Calculator
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
       
       <div className="max-w-7xl mx-auto p-6">
