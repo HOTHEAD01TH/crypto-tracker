@@ -5,6 +5,7 @@ import InsightCard from '../components/InsightCard';
 import HistoricalChart from '../components/HistoricalChart';
 import ThemeToggle from '../components/ThemeToggle';
 import SearchBar from '../components/SearchBar';
+import { useAuth } from '../context/AuthContext';
 
 function Home() {
   const [coins, setCoins] = useState([
@@ -20,6 +21,8 @@ function Home() {
   ]);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const { user, logout } = useAuth();
 
   const addCoin = (coin) => {
     const newCoin = {
@@ -56,6 +59,34 @@ function Home() {
               >
                 Portfolio Calculator
               </Link>
+              
+              {/* Add Auth Buttons */}
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-600 dark:text-gray-300">{user.name}</span>
+                  <button
+                    onClick={logout}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/signin"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
             </div>
             
             {/* Theme Toggle */}
@@ -112,6 +143,40 @@ function Home() {
               >
                 Portfolio Calculator
               </Link>
+              {/* Add Auth Links to Mobile Menu */}
+              {user ? (
+                <>
+                  <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300">
+                    {user.name}
+                  </span>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/signin"
+                    className="block px-4 py-2 text-sm text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="block px-4 py-2 text-sm text-green-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
