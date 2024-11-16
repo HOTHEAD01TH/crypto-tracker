@@ -6,42 +6,33 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUserData = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/user/profile`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const userData = await response.json();
+      setUser(userData);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  const login = async (data) => {
+    setUser(data.user);
+    localStorage.setItem('token', data.token);
+    await fetchUserData(data.user.id);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      checkAuth(token);
-    } else {
-      setLoading(false);
+      fetchUserData();
     }
+    setLoading(false);
   }, []);
-
-  const checkAuth = async (token) => {
-    try {
-      const response = await fetch('/api/auth/check', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-      } else {
-        localStorage.removeItem('token');
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('token');
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const login = (data) => {
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
-  };
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -59,7 +50,8 @@ export const AuthProvider = ({ children }) => {
       loading, 
       login, 
       logout,
-      updateUser 
+      updateUser,
+      fetchUserData
     }}>
       {children}
     </AuthContext.Provider>

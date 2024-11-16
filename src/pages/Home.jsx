@@ -11,7 +11,7 @@ import ProfileUpdateModal from '../components/ProfileUpdateModal';
 // const userIconUrl = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
 
 function Home() {
-  const { user, logout, updateUser } = useAuth();
+  const { user, logout, updateUser, fetchUserData } = useAuth();
   const [coins, setCoins] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,6 +35,12 @@ function Home() {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserData(user.id);
+    }
   }, []);
 
   const fetchUserCoins = async () => {
@@ -87,9 +93,8 @@ function Home() {
     }
   };
 
-  const handleProfileUpdate = (updatedUser) => {
-    console.log('Updated user:', updatedUser);
-    updateUser(updatedUser);
+  const handleProfileUpdate = async (updatedUser) => {
+    await fetchUserData(updatedUser.id);
     setIsProfileModalOpen(false);
   };
 
@@ -138,8 +143,8 @@ function Home() {
                       className="w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all duration-200 focus:outline-none"
                     >
                       <img 
-                        src={user.profilePicture?.data || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
-                        alt={user.name} 
+                        src={user?.profilePicture?.data || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
+                        alt={user?.name} 
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.target.src = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
@@ -157,7 +162,7 @@ function Home() {
                         <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                           <div className="flex items-center gap-4">
                             <img
-                              src={user.profilePicture?.data || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
+                              src={user?.profilePicture?.data || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
                               alt="Profile"
                               className="w-16 h-16 rounded-full object-cover flex-shrink-0"
                               onError={(e) => {
@@ -165,8 +170,8 @@ function Home() {
                               }}
                             />
                             <div className="flex-1">
-                              <p className="font-semibold text-lg">{user.name}</p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
+                              <p className="font-semibold text-lg">{user?.name}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
                             </div>
                           </div>
                         </div>

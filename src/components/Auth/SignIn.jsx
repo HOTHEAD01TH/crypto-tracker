@@ -14,25 +14,24 @@ function SignIn() {
     setError('');
     
     try {
-      const response = await fetch('/api/auth/signin', {
+      const response = await fetch('http://localhost:5000/api/auth/signin', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
 
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to sign in');
+        throw new Error(data.message || 'Sign in failed');
       }
 
-      login(data);
+      await login(data);
       navigate('/dashboard');
     } catch (err) {
-      console.error('Sign in error:', err);
-      setError(err.message || 'Failed to sign in');
+      setError(err.message);
     }
   };
 
