@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -35,6 +37,18 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ message: err.message || 'Internal server error' });
 });
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Make sure the uploads directory exists
+import fs from 'fs';
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

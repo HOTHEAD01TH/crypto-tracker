@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  profilePicture: {
+    type: String,
+    default: ''
+  },
   watchlist: [{
     symbol: String,
     name: String,

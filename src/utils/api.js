@@ -27,3 +27,25 @@ export const signIn = async (credentials) => {
   setAuthToken(data.token);
   return data;
 };
+
+export const updateProfile = async (formData) => {
+  try {
+    const response = await fetch(`${API_URL}/user/profile`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to update profile');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Profile update error:', error);
+    throw error;
+  }
+};

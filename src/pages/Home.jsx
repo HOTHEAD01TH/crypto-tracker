@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import PriceCard from '../components/priceCard';
 import InsightCard from '../components/InsightCard';
@@ -6,19 +6,36 @@ import HistoricalChart from '../components/HistoricalChart';
 import ThemeToggle from '../components/ThemeToggle';
 import SearchBar from '../components/SearchBar';
 import { useAuth } from '../context/AuthContext';
+import ProfileUpdateModal from '../components/ProfileUpdateModal';
+
+// const userIconUrl = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
 
 function Home() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const [coins, setCoins] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
       fetchUserCoins();
     }
   }, [user]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchUserCoins = async () => {
     try {
@@ -70,6 +87,11 @@ function Home() {
     }
   };
 
+  const handleProfileUpdate = (updatedUser) => {
+    updateUser(updatedUser);
+    setIsProfileModalOpen(false);
+  };
+
   return (
     <div className="bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-white">
       <header className="p-4 bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
@@ -92,17 +114,74 @@ function Home() {
                 Portfolio Calculator
               </Link>
               
-              {user ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-600 dark:text-gray-300">{user.name}</span>
-                  <button
+              {user && (
+                <div className="flex items-center gap-4 ml-4">
+                  {/* <button
                     onClick={logout}
                     className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                   >
                     Logout
                   </button>
+                   */}
+                
+            
+            {/* Theme Toggle */}
+            
+              <ThemeToggle />
+             
+              {/* User Menu */}
+              <div className="relative" ref={userMenuRef}>
+              <div className="border-l pl-4 dark:border-gray-600">
+                    <button
+                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      className="w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all duration-200 focus:outline-none"
+                    >
+                      <img 
+                        src={user.profilePicture || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
+                        alt="User" 
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                    </div>
+
+                    {/* Dropdown Menu */}
+                    {isUserMenuOpen && (
+                      <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50">
+                        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={user.profilePicture || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
+                              alt="Profile"
+                              className="w-16 h-16 rounded-full"
+                            />
+                            <div>
+                              <p className="font-semibold">{user.name}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="px-4 py-2">
+                          <button
+                            onClick={() => setIsProfileModalOpen(true)}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                          >
+                            Update Profile
+                          </button>
+                          <button
+                            onClick={logout}
+                            className="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ) : (
+              )}
+              
+              {!user && (
                 <div className="flex items-center gap-3">
                   <Link
                     to="/signin"
@@ -120,10 +199,6 @@ function Home() {
               )}
             </div>
             
-            {/* Theme Toggle */}
-            <div className="border-l pl-4 dark:border-gray-600">
-              <ThemeToggle />
-            </div>
 
             {/* Hamburger Menu Button */}
             <button 
@@ -249,6 +324,13 @@ function Home() {
           </div>
         )}
       </div>
+
+      <ProfileUpdateModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={user}
+        onUpdate={handleProfileUpdate}
+      />
     </div>
   );
 }
