@@ -1,24 +1,13 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
 import User from '../models/User.js';
-import multer from 'multer';
 
 const router = express.Router();
 
-const upload = multer({ 
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-      cb(null, Date.now() + '-' + file.originalname);
-    }
-  })
-});
-
-// Add this new route for profile updates
-router.put('/profile', auth, upload.single('profilePicture'), async (req, res) => {
+router.put('/profile', auth, async (req, res) => {
   try {
+    console.log('Received update request:', req.body);
+
     const user = await User.findById(req.user.userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -30,21 +19,32 @@ router.put('/profile', auth, upload.single('profilePicture'), async (req, res) =
     }
 
     // Update profile picture if provided
-    if (req.file) {
-      user.profilePicture = `http://localhost:5000/uploads/${req.file.filename}`;
+    if (req.body.profilePicture && req.body.profilePicture.data) {
+      user.profilePicture = {
+        data: req.body.profilePicture.data,
+        contentType: req.body.profilePicture.contentType
+      };
     }
 
+    console.log('Saving user...');
     await user.save();
+    console.log('User saved successfully');
 
     res.json({
       id: user._id,
       name: user.name,
       email: user.email,
-      profilePicture: user.profilePicture
+      profilePicture: {
+        data: user.profilePicture?.data,
+        contentType: user.profilePicture?.contentType
+      }
     });
   } catch (error) {
-    console.error('Profile update error:', error);
-    res.status(500).json({ message: 'Error updating profile' });
+    console.error('Profile update error details:', error);
+    res.status(500).json({ 
+      message: 'Error updating profile',
+      error: error.message 
+    });
   }
 });
 

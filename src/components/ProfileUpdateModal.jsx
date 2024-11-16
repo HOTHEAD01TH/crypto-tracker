@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { updateProfile } from '../utils/api';
+import { useState, useEffect } from 'react';
 
 function ProfileUpdateModal({ isOpen, onClose, user, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -7,15 +6,75 @@ function ProfileUpdateModal({ isOpen, onClose, user, onUpdate }) {
     email: user?.email || ''
   });
   const [profilePicture, setProfilePicture] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(user?.profilePicture || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png");
+  const [previewUrl, setPreviewUrl] = useState(
+    user?.profilePicture?.data || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"
+  );
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleImageChange = (e) => {
+  useEffect(() => {
+    setPreviewUrl(user?.profilePicture?.data || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png");
+  }, [user]);
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const compressImage = async (base64Str) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.7)); // Compress with 0.7 quality
+      };
+    });
+  };
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfilePicture(file);
-      setPreviewUrl(URL.createObjectURL(file));
+      try {
+        if (file.size > 5000000) { // 5MB limit
+          throw new Error('File size too large. Please choose an image under 5MB.');
+        }
+        const base64 = await convertToBase64(file);
+        const compressedBase64 = await compressImage(base64);
+        setProfilePicture({
+          data: compressedBase64,
+          contentType: 'image/jpeg'
+        });
+        setPreviewUrl(compressedBase64);
+      } catch (err) {
+        console.error('Error processing image:', err);
+        setError(err.message || 'Failed to process image');
+      }
     }
   };
 
@@ -25,27 +84,33 @@ function ProfileUpdateModal({ isOpen, onClose, user, onUpdate }) {
     setIsLoading(true);
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
+      const updateData = {
+        name: formData.name
+      };
+
       if (profilePicture) {
-        formDataToSend.append('profilePicture', profilePicture);
+        updateData.profilePicture = profilePicture;
       }
+
+      console.log('Sending update request:', updateData); // Debug log
 
       const response = await fetch('http://localhost:5000/api/user/profile', {
         method: 'PUT',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: formDataToSend
+        body: JSON.stringify(updateData)
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to update profile');
+        throw new Error(data.message || 'Failed to update profile');
       }
 
-      const updatedUser = await response.json();
-      console.log('Updated user:', updatedUser);
-      onUpdate(updatedUser);
+      console.log('Update successful:', data); // Debug log
+      onUpdate(data);
       onClose();
     } catch (err) {
       console.error('Profile update error:', err);
@@ -85,6 +150,9 @@ function ProfileUpdateModal({ isOpen, onClose, user, onUpdate }) {
                 src={previewUrl}
                 alt="Profile Preview"
                 className="w-32 h-32 rounded-full object-cover"
+                onError={(e) => {
+                  e.target.src = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
+                }}
               />
               <label className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full cursor-pointer hover:bg-blue-600 transition-colors">
                 <input

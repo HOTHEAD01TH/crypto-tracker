@@ -88,6 +88,7 @@ function Home() {
   };
 
   const handleProfileUpdate = (updatedUser) => {
+    console.log('Updated user:', updatedUser);
     updateUser(updatedUser);
     setIsProfileModalOpen(false);
   };
@@ -137,31 +138,39 @@ function Home() {
                       className="w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all duration-200 focus:outline-none"
                     >
                       <img 
-                        src={user.profilePicture || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
-                        alt="User" 
+                        src={user.profilePicture?.data || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
+                        alt={user.name} 
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
+                        }}
                       />
                     </button>
                     </div>
 
                     {/* Dropdown Menu */}
                     {isUserMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50">
+                      <div 
+                        ref={userMenuRef}
+                        className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1"
+                      >
                         <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-4">
                             <img
-                              src={user.profilePicture || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
+                              src={user.profilePicture?.data || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png"}
                               alt="Profile"
-                              className="w-16 h-16 rounded-full"
+                              className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                              onError={(e) => {
+                                e.target.src = "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
+                              }}
                             />
-                            <div>
-                              <p className="font-semibold">{user.name}</p>
+                            <div className="flex-1">
+                              <p className="font-semibold text-lg">{user.name}</p>
                               <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
                             </div>
                           </div>
                         </div>
-                        
-                        <div className="px-4 py-2">
+                        <div className="px-2 py-2">
                           <button
                             onClick={() => setIsProfileModalOpen(true)}
                             className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"

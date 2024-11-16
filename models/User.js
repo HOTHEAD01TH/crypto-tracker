@@ -16,8 +16,14 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   profilePicture: {
-    type: String,
-    default: ''
+    data: {
+      type: String,
+      required: false
+    },
+    contentType: {
+      type: String,
+      required: false
+    }
   },
   watchlist: [{
     symbol: String,
