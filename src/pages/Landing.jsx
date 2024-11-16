@@ -30,12 +30,6 @@ function Landing() {
             >
               Launch App
             </Link>
-            <a
-              href="#features"
-              className="bg-transparent border-2 border-white hover:bg-white hover:text-black px-8 py-3 rounded-lg text-lg font-semibold transition-all"
-            >
-              Learn More
-            </a>
           </div>
         </div>
       </div>

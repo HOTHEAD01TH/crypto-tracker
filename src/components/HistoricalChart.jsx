@@ -96,35 +96,43 @@ function HistoricalChart({ symbol }) {
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      const timeframe = timeframes.find(t => t.value === selectedTimeframe);
-      const data = await getHistoricalData(symbol, timeframe.days);
-      
-      setChartData({
-        labels: data.map((point) => {
-          const date = new Date(point[0]);
-          // Format date based on timeframe
-          if (timeframe.days <= 1) {
-            return date.toLocaleTimeString();
-          } else if (timeframe.days <= 7) {
-            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-          }
-          return date.toLocaleDateString();
-        }),
-        datasets: [
-          {
-            label: `${symbol} Price`,
-            data: data.map((point) => point[1]),
-            borderColor: 'rgb(75, 192, 192)',
-            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-            tension: 0.1,
-            fill: true,
-          },
-        ],
-      });
-      setIsLoading(false);
+      try {
+        const timeframe = timeframes.find(t => t.value === selectedTimeframe);
+        const data = await getHistoricalData(symbol, timeframe.days);
+        
+        if (data && Array.isArray(data)) {
+          setChartData({
+            labels: data.map((point) => {
+              const date = new Date(point[0]);
+              if (timeframe.days <= 1) {
+                return date.toLocaleTimeString();
+              } else if (timeframe.days <= 7) {
+                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+              }
+              return date.toLocaleDateString();
+            }),
+            datasets: [
+              {
+                label: `${symbol} Price`,
+                data: data.map((point) => point[1]),
+                borderColor: currentTheme.borderColor,
+                backgroundColor: currentTheme.backgroundColor,
+                tension: 0.1,
+                fill: true,
+              },
+            ],
+          });
+        } else {
+          console.error('Invalid historical data format:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching historical data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchData();
-  }, [symbol, selectedTimeframe]);
+  }, [symbol, selectedTimeframe, theme]);
 
   return (
     <div className="space-y-4">

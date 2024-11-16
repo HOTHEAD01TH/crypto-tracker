@@ -4,7 +4,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Calculator from './pages/Calculator';
-import NewsAnalytics from './pages/NewsAnalytics';
+import SignIn from './components/Auth/SignIn';
+import SignUp from './components/Auth/SignUp';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -16,7 +17,8 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/dashboard" element={<Home />} />
             <Route path="/calculator" element={<Calculator />} />
-            <Route path="/news" element={<NewsAnalytics />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
