@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PriceCard from '../components/priceCard';
 import InsightCard from '../components/InsightCard';
@@ -8,33 +8,65 @@ import SearchBar from '../components/SearchBar';
 import { useAuth } from '../context/AuthContext';
 
 function Home() {
-  const [coins, setCoins] = useState([
-    { symbol: 'BTC', name: 'Bitcoin', logo: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png' },
-    { symbol: 'ETH', name: 'Ethereum', logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png' },
-    { symbol: 'DOGE', name: 'Dogecoin', logo: 'https://cryptologos.cc/logos/dogecoin-doge-logo.png' },
-    { symbol: 'XRP', name: 'Ripple', logo: 'https://cryptologos.cc/logos/xrp-xrp-logo.png' },
-    { symbol: 'SOL', name: 'Solana', logo: 'https://cryptologos.cc/logos/solana-sol-logo.png' },
-    { symbol: 'ADA', name: 'Cardano', logo: 'https://cryptologos.cc/logos/cardano-ada-logo.png' },
-    { symbol: 'DOT', name: 'Polkadot', logo: 'https://cryptologos.cc/logos/polkadot-new-dot-logo.png' },
-    { symbol: 'MATIC', name: 'Polygon', logo: 'https://cryptologos.cc/logos/polygon-matic-logo.png' },
-    { symbol: 'LINK', name: 'Chainlink', logo: 'https://cryptologos.cc/logos/chainlink-link-logo.png' }
-  ]);
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const { user, logout } = useAuth();
+  const [coins, setCoins] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const addCoin = (coin) => {
-    const newCoin = {
-      symbol: coin.symbol.toUpperCase(),
-      name: coin.name,
-      logo: coin.thumb || coin.large
-    };
-    
-    // Check if coin already exists
-    if (!coins.some(c => c.symbol === newCoin.symbol)) {
-      // Add new coin at the beginning of the array
-      setCoins([newCoin, ...coins]);
+  useEffect(() => {
+    if (user) {
+      fetchUserCoins();
+    }
+  }, [user]);
+
+  const fetchUserCoins = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetch('/api/user/coins', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCoins(data.watchlist);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user coins:', error);
+      setError('Failed to fetch coins');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const addCoin = async (coin) => {
+    try {
+      const response = await fetch('/api/user/coins', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          symbol: coin.symbol.toUpperCase(),
+          name: coin.name,
+          logo: coin.thumb || coin.large
+        })
+      });
+
+      if (response.ok) {
+        fetchUserCoins();
+      } else {
+        const data = await response.json();
+        console.error('Failed to add coin:', data.message);
+      }
+    } catch (error) {
+      console.error('Failed to add coin:', error);
     }
   };
 
@@ -60,7 +92,6 @@ function Home() {
                 Portfolio Calculator
               </Link>
               
-              {/* Add Auth Buttons */}
               {user ? (
                 <div className="flex items-center gap-3">
                   <span className="text-gray-600 dark:text-gray-300">{user.name}</span>
@@ -127,34 +158,26 @@ function Home() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 py-4 border-t dark:border-gray-700">
-            <div className="flex flex-col gap-2">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-800 shadow-lg p-4">
+            <div className="flex flex-col gap-4">
               <Link 
                 to="/news" 
-                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                onClick={() => setIsMenuOpen(false)}
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
               >
                 News & Analytics
               </Link>
               <Link 
                 to="/calculator" 
-                className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                onClick={() => setIsMenuOpen(false)}
+                className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
               >
                 Portfolio Calculator
               </Link>
-              {/* Add Auth Links to Mobile Menu */}
               {user ? (
                 <>
-                  <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300">
-                    {user.name}
-                  </span>
+                  <span className="text-gray-600 dark:text-gray-300">{user.name}</span>
                   <button
-                    onClick={() => {
-                      logout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    onClick={logout}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                   >
                     Logout
                   </button>
@@ -163,15 +186,13 @@ function Home() {
                 <>
                   <Link
                     to="/signin"
-                    className="block px-4 py-2 text-sm text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                    onClick={() => setIsMenuOpen(false)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/signup"
-                    className="block px-4 py-2 text-sm text-green-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                    onClick={() => setIsMenuOpen(false)}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
                   >
                     Sign Up
                   </Link>
@@ -187,28 +208,46 @@ function Home() {
           <SearchBar onAddCoin={addCoin} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
-          {coins.map(({ symbol, name, logo }) => (
-            <div key={symbol} className="space-y-4">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-                <div className="flex items-center gap-3 p-4 border-b dark:border-gray-700">
-                  <img src={logo} alt={name} className="w-10 h-10" />
-                  <h2 className="text-xl font-bold">{name}</h2>
-                </div>
-                
-                <div className="p-4">
-                  <PriceCard symbol={symbol} />
-                </div>
-                
-                <div className="p-4 bg-gray-50 dark:bg-gray-700">
-                  <HistoricalChart symbol={symbol} days={30} />
-                </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 animate-pulse">
+                <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
               </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-red-500 text-center">{error}</div>
+        ) : coins.length === 0 ? (
+          <div className="text-center text-gray-500 dark:text-gray-400">
+            No coins added yet. Use the search bar above to add some cryptocurrencies to your watchlist.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
+            {coins.map(({ symbol, name, logo }) => (
+              <div key={symbol} className="space-y-4">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                  <div className="flex items-center gap-3 p-4 border-b dark:border-gray-700">
+                    <img src={logo} alt={name} className="w-10 h-10" />
+                    <h2 className="text-xl font-bold">{name}</h2>
+                  </div>
+                  
+                  <div className="p-4">
+                    <PriceCard symbol={symbol} />
+                  </div>
+                  
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700">
+                    <HistoricalChart symbol={symbol} days={30} />
+                  </div>
+                </div>
 
-              <InsightCard symbol={symbol} name={name} />
-            </div>
-          ))}
-        </div>
+                <InsightCard symbol={symbol} name={name} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

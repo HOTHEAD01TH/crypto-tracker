@@ -11,6 +11,8 @@ function SignIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    
     try {
       const response = await fetch('/api/auth/signin', {
         method: 'POST',
@@ -21,14 +23,16 @@ function SignIn() {
       });
 
       const data = await response.json();
-      if (response.ok) {
-        login(data);
-        navigate('/dashboard');
-      } else {
-        setError(data.message);
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to sign in');
       }
+
+      login(data);
+      navigate('/dashboard');
     } catch (err) {
-      setError('Failed to sign in');
+      console.error('Sign in error:', err);
+      setError(err.message || 'Failed to sign in');
     }
   };
 
