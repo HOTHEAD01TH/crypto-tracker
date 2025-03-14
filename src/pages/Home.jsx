@@ -47,7 +47,7 @@ function Home() {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetch('/api/user/coins', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/user/coins`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -69,7 +69,7 @@ function Home() {
 
   const addCoin = async (coin) => {
     try {
-      const response = await fetch('/api/user/coins', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/user/coins`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

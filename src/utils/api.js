@@ -49,3 +49,22 @@ export const updateProfile = async (formData) => {
     throw error;
   }
 };
+
+export const fetchWithAuth = async (endpoint, options = {}) => {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    }
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'API request failed');
+  }
+  
+  return response.json();
+};
