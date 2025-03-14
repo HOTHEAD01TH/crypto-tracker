@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import process from 'process';
 
 const auth = (req, res, next) => {
   try {
