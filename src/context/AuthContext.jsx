@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/user/profile`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

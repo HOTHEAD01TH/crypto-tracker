@@ -94,7 +94,7 @@ function ProfileUpdateModal({ isOpen, onClose, user, onUpdate }) {
 
       console.log('Sending update request:', updateData); // Debug log
 
-      const response = await fetch('http://localhost:5000/api/user/profile', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/user/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

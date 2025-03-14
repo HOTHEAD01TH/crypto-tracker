@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import PriceCard from '../components/priceCard';
+import PriceCard from '../components/PriceCard';
 import InsightCard from '../components/InsightCard';
 import HistoricalChart from '../components/HistoricalChart';
 import ThemeToggle from '../components/ThemeToggle';
