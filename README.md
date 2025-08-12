@@ -25,7 +25,7 @@ A modern cryptocurrency tracking application built with React that provides real
 
 ```bash
 git clone  https://github.comHOTHEAD01TH/crypto-tracker.git
-cd chintu-ai
+cd crypto-tracker
 ```
 
 2. Navigate to the project directory:
