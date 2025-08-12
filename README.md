@@ -21,25 +21,27 @@ A modern cryptocurrency tracking application built with React that provides real
 
 ## Getting Started
 
-1. Clone the repository:
-   \`\`\`bash
-   git clone https://github.com/yourusername/crypto-tracker.git
-   \`\`\`
+### 1. Clone the Repository
+
+```bash
+git clone  https://github.comHOTHEAD01TH/crypto-tracker.git
+cd chintu-ai
+```
 
 2. Navigate to the project directory:
-   \`\`\`bash
+  ```bash
    cd crypto-tracker
-   \`\`\`
+```
 
 3. Install dependencies:
-   \`\`\`bash
+  ```bash
    npm install
-   \`\`\`
+ ```
 
 4. Start the development server:
-   \`\`\`bash
+  ```bash
    npm run dev
-   \`\`\`
+  ```
 
 5. Open your browser and go to \`http://localhost:3000\` to view the application.
 
